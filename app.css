@@ -1,0 +1,36 @@
+.bb-sidebar-search-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+.bb-sidebar-search-button:hover {
+  background: var(--sidebar-accent);
+  color: var(--sidebar-foreground);
+}
+.bb-sidebar-search-button:focus-visible {
+  outline: 2px solid var(--sidebar-ring);
+  outline-offset: 2px;
+}
+.bb-sidebar-search-button:disabled {
+  pointer-events: none;
+  opacity: .5;
+}
+.bb-sidebar-search-button svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+@media (max-width: 767px) and (pointer: coarse) {
+  .bb-sidebar-search-button { width: 36px; height: 36px; }
+  .bb-sidebar-search-button svg { width: 20px; height: 20px; }
+}
