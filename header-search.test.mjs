@@ -5,7 +5,7 @@ import {experimental_scanPublicSdkOnly} from '@get-bb/plugin-sdk/testing';
 import {mountHeaderSearch} from './header-search.ts';
 
 const settle = () => new Promise(resolve => setTimeout(resolve, 0));
-const header = '<div data-testid="nav-rail-header"><button>New thread</button></div>';
+const header = '<div data-testid="app-sidebar-top-reserve-row"><div data-sidebar-header-slot=""><button>New thread</button></div></div>';
 const source = '<span data-nav-rail-item="__bb__/search-threads"><button aria-label="Search threads (Ctrl + K)" aria-keyshortcuts="Control+K"><svg></svg></button></span>';
 const own = '[data-sidebar-search-button]';
 
@@ -53,10 +53,10 @@ test('handles host redraws, multiple sidebars, late source mounting, and abort w
   doc.body.insertAdjacentHTML('beforeend', source + header);
   await settle();
   assert.equal(doc.querySelectorAll(own).length, 2);
-  doc.querySelector('[data-testid="nav-rail-header"]').replaceChildren();
+  doc.querySelector('[data-sidebar-header-slot]').replaceChildren();
   await settle();
   assert.equal(doc.querySelectorAll(own).length, 2);
-  doc.querySelector('[data-testid="nav-rail-header"]').outerHTML = header;
+  doc.querySelector('[data-testid="app-sidebar-top-reserve-row"]').outerHTML = header;
   await settle();
   assert.equal(doc.querySelectorAll(own).length, 2);
   const detached = doc.querySelector(own);
@@ -79,6 +79,19 @@ test('does not leave a dead button when the host search control is removed', asy
   doc.body.insertAdjacentHTML('beforeend', source);
   await settle();
   assert.equal(doc.querySelectorAll(own).length, 1);
+});
+
+test('renders beside New thread in the BB 0.47.1 navigation header', t => {
+  // BB 0.47 moved New thread into the Navigation plugin and renamed the test id.
+  const currentHeader = '<div data-testid="app-sidebar-top-reserve-row"><div data-testid="sidebar-header-slot" data-sidebar-header-slot=""><div data-bb-plugin="navigation" class="contents"><button>New thread</button></div></div></div>';
+  const {doc} = setup(t, currentHeader + source);
+  const button = doc.querySelector(own);
+  assert.ok(button, 'Поиск тредов должен появиться в заголовке BB 0.47.1');
+  assert.equal(button.parentElement, doc.querySelector('[data-sidebar-header-slot]'));
+  let clicks = 0;
+  doc.querySelector('[data-nav-rail-item] button').onclick = () => clicks++;
+  button.click();
+  assert.equal(clicks, 1);
 });
 
 test('imports only public SDK surfaces and package-local sources', async () => {

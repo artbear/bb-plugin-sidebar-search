@@ -1,5 +1,6 @@
-/** BB 0.46 sidebar DOM integration; no private BB imports or synthetic shortcuts. */
-const HEADER = '[data-testid="nav-rail-header"]';
+/** BB 0.47 sidebar DOM integration; no private BB imports or synthetic shortcuts. */
+// The header test id changed in BB 0.47; its semantic attribute stayed stable.
+const HEADER = '[data-testid="app-sidebar-top-reserve-row"] [data-sidebar-header-slot]';
 const SEARCH = '[data-nav-rail-item="__bb__/search-threads"] button';
 const MARKER = "data-sidebar-search-button";
 
