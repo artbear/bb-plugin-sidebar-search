@@ -1,4 +1,6 @@
 import {test} from 'node:test';
+import {readFile} from 'node:fs/promises';
+import {satisfies} from 'semver';
 import assert from 'node:assert/strict';
 import {JSDOM} from 'jsdom';
 import {experimental_scanPublicSdkOnly} from '@get-bb/plugin-sdk/testing';
@@ -94,8 +96,20 @@ test('renders beside New thread in the BB 0.47.1 navigation header', t => {
   assert.equal(clicks, 1);
 });
 
+test('allows supported BB 0.47.1 and 0.48.0 releases in the plugin manifest', async () => {
+  const manifest = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'));
+  for (const version of ['0.47.1', '0.48.0']) {
+    assert.ok(satisfies(version, manifest.engines.bb), `BB ${version} must be allowed to load the plugin`);
+  }
+  assert.equal(satisfies('0.47.0', manifest.engines.bb), false);
+  for (const version of ['0.6.79', '0.6.94']) {
+    assert.ok(satisfies(version, manifest.engines.bbPluginSdk), `SDK ${version} must be allowed`);
+  }
+  assert.equal(satisfies('0.6.78', manifest.engines.bbPluginSdk), false);
+});
+
 test('imports only public SDK surfaces and package-local sources', async () => {
-  const result = await experimental_scanPublicSdkOnly(process.cwd(), {allow: [/^jsdom$/]});
+  const result = await experimental_scanPublicSdkOnly(process.cwd(), {allow: [/^(jsdom|semver)$/]});
   assert.deepEqual(result.violations, []);
   assert.deepEqual(result.privateDependencies, []);
 });
